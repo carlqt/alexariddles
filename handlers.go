@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/Sirupsen/logrus"
@@ -29,15 +28,17 @@ func riddleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	riddle := riddles.Ask()
+	riddle, answer := riddles.Ask()
 	if alexaReq.Type() == "IntentRequest" {
 		switch alexaReq.IntentName() {
 		case "AMAZON.CancelIntent":
-			response.AlexaText("Cancelled").SimpleCard("Cancel", "cancel").Respond(w, 200)
+			response.AlexaText("Cancelled").SimpleCard("Cancel", "cancel").Respond(w, 200, true)
 		case "AskRiddle":
-			response.AlexaText(riddle).SimpleCard("Riddle me this", riddle).Respond(w, 200)
+			response.AlexaText(riddle).SimpleCard("Riddle me this", riddle).SessionAttr("answer", answer).Respond(w, 200, false)
+		case "AnswerRiddle":
+			response.AlexaText("perhaps").SimpleCard("Riddle me this", "perhaps").Respond(w, 200, true)
 		default:
-			log.Fatal("unrecognized")
+			response.AlexaText("I do not know how to answer").SimpleCard("Riddle me this", "I do not know how to answer").Respond(w, 200, true)
 		}
 	}
 }
