@@ -9,3 +9,6 @@ import:
   subpackages:
   - middleware
 - package: github.com/sirupsen/logrus
+  repo: git@github.com:/sirupsen/logrus
+  vcs: git
+  version: master

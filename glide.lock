@@ -1,0 +1,21 @@
+hash: bd3e8e344dfff1f69ee6b6a6a78a41e4f793691aa2bb71856f9e9c577c1588a1
+updated: 2017-07-04T19:05:50.405472715+08:00
+imports:
+- name: github.com/carlqt/alexaskill
+  version: aeb4daeb767585a73330d7e5ededa0d27991e79c
+  subpackages:
+  - middleware
+  - response
+- name: github.com/go-chi/chi
+  version: 967844826e58cf31213a7dfb82455d242ad85101
+  subpackages:
+  - middleware
+- name: github.com/sirupsen/logrus
+  version: 7dd06bf38e1e13df288d471a57d5adbac106be9e
+  repo: git@github.com:/sirupsen/logrus
+  vcs: git
+- name: golang.org/x/sys
+  version: 94b76065f2d2081d0fef24a6e67c571f51a6408a
+  subpackages:
+  - unix
+testImports: []
