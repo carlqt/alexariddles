@@ -7,10 +7,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/carlqt/alexariddles/riddles"
 	"github.com/carlqt/alexaskill"
 	"github.com/carlqt/alexaskill/response"
+	"github.com/sirupsen/logrus"
 )
 
 func ApiHandler(next http.Handler) http.Handler {

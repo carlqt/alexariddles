@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Sirupsen/logrus"
 	alexaMiddleware "github.com/carlqt/alexaskill/middleware"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/sirupsen/logrus"
 )
 
 var f *os.File
