@@ -1,3 +1,5 @@
+//TODO: Check if answer is correct/incorrect
+//TODO: Reprompt if user is taking too long to answer
 package main
 
 import (
@@ -36,7 +38,14 @@ func riddleHandler(w http.ResponseWriter, r *http.Request) {
 		case "AskRiddle":
 			response.AlexaText(riddle).SimpleCard("Riddle me this", riddle).SessionAttr("answer", answer).Respond(w, 200, false)
 		case "AnswerRiddle":
-			response.AlexaText("perhaps").SimpleCard("Riddle me this", "perhaps").Respond(w, 200, true)
+			sessionAnswer := alexaReq.GetSessionAttr("answer")
+			userAnswer := alexaReq.GetUserAnswer()
+
+			if sessionAnswer == userAnswer {
+				response.AlexaText("You are correct. The answer is "+sessionAnswer).SimpleCard("Riddle me this", "You are correct. Then answer is "+sessionAnswer).Respond(w, 200, true)
+			} else {
+				response.AlexaText("Sorry, "+userAnswer+" is not the answer. Try again").SimpleCard("Riddle me this", "Sorry, "+userAnswer+" is not the answer. Try again").Respond(w, 200, false)
+			}
 		default:
 			response.AlexaText("I do not know how to answer").SimpleCard("Riddle me this", "I do not know how to answer").Respond(w, 200, true)
 		}

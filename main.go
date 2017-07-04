@@ -1,3 +1,4 @@
+//TODO: Handle when user has incorrect answers
 package main
 
 import (
@@ -20,7 +21,7 @@ func init() {
 		log.Fatal(err)
 	}
 
-	logrus.SetFormatter(&logrus.JSONFormatter{})
+	logrus.SetFormatter(&logrus.TextFormatter{})
 	logrus.SetOutput(f)
 }
 
