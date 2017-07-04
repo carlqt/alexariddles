@@ -1,9 +1,5 @@
 package: github.com/carlqt/alexariddles
 import:
-- package: github.com/carlqt/alexaskill
-  subpackages:
-  - middleware
-  - response
 - package: github.com/go-chi/chi
   version: ^3.0.0
   subpackages:

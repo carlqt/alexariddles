@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	alexaMiddleware "github.com/carlqt/alexaskill/middleware"
+	alexaMiddleware "github.com/carlqt/alexariddles/alexaskill/middleware"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/sirupsen/logrus"

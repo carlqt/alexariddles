@@ -7,9 +7,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/carlqt/alexariddles/alexaskill"
+	"github.com/carlqt/alexariddles/alexaskill/response"
 	"github.com/carlqt/alexariddles/riddles"
-	"github.com/carlqt/alexaskill"
-	"github.com/carlqt/alexaskill/response"
 	"github.com/sirupsen/logrus"
 )
 
@@ -34,9 +34,16 @@ func riddleHandler(w http.ResponseWriter, r *http.Request) {
 	if alexaReq.Type() == "IntentRequest" {
 		switch alexaReq.IntentName() {
 		case "AMAZON.CancelIntent":
-			response.AlexaText("Cancelled").SimpleCard("Cancel", "cancel").Respond(w, 200, true)
+			response.AlexaText("Questor cancelled").SimpleCard("Questor", "cancel").Respond(w, 200, true)
+		case "AMAZON.StopIntent":
+			response.AlexaText("Questor stopped").SimpleCard("Questor", "stop").Respond(w, 200, true)
 		case "AskRiddle":
-			response.AlexaText(riddle).SimpleCard("Riddle me this", riddle).SessionAttr("answer", answer).Respond(w, 200, false)
+			response.AlexaText(riddle).
+				SimpleCard("Riddle me this", riddle).
+				SessionAttr("answer", answer).
+				RepromptText("Time is up. The answer is, "+answer).
+				Respond(w, 200, false)
+
 		case "AnswerRiddle":
 			sessionAnswer := alexaReq.GetSessionAttr("answer")
 			userAnswer := alexaReq.GetUserAnswer()
@@ -44,8 +51,12 @@ func riddleHandler(w http.ResponseWriter, r *http.Request) {
 			if sessionAnswer == userAnswer {
 				response.AlexaText("You are correct. The answer is "+sessionAnswer).SimpleCard("Riddle me this", "You are correct. Then answer is "+sessionAnswer).Respond(w, 200, true)
 			} else {
-				if userAnswer == "" {
-					response.AlexaText("Sorry, it is not the answer. Try again").SessionAttr("answer", sessionAnswer).SimpleCard("Riddle me this", "Sorry, it is not the answer. Try again").Respond(w, 200, false)
+				if len(userAnswer) == 0 {
+					response.AlexaText("Sorry, it is not the answer. Try again").
+						SessionAttr("answer", sessionAnswer).
+						SimpleCard("Riddle me this", "Sorry, it is not the answer. Try again").
+						Respond(w, 200, false)
+
 				} else {
 					response.AlexaText("Sorry, "+userAnswer+" is not the answer. Try again").SessionAttr("answer", sessionAnswer).SimpleCard("Riddle me this", "Sorry, "+userAnswer+" is not the answer. Try again").Respond(w, 200, false)
 				}
