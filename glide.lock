@@ -1,16 +1,8 @@
-hash: ad3c716c5685f9bbd5bc1a34d5f2963b152fa8273d0a535886dd6c9d2cfbd2e3
-updated: 2017-07-04T23:12:33.125299594+08:00
+hash: 3277f38b313f49b9fb5de4f446f868679477990d5ffeb9a83dc0ce9b11901a01
+updated: 2017-07-05T07:13:45.547724025+08:00
 imports:
 - name: github.com/go-chi/chi
   version: 967844826e58cf31213a7dfb82455d242ad85101
   subpackages:
   - middleware
-- name: github.com/sirupsen/logrus
-  version: 7dd06bf38e1e13df288d471a57d5adbac106be9e
-  repo: git@github.com:/sirupsen/logrus
-  vcs: git
-- name: golang.org/x/sys
-  version: 94b76065f2d2081d0fef24a6e67c571f51a6408a
-  subpackages:
-  - unix
 testImports: []

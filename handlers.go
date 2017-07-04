@@ -3,26 +3,21 @@
 package main
 
 import (
-	"bytes"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/carlqt/alexariddles/alexaskill"
 	"github.com/carlqt/alexariddles/alexaskill/response"
 	"github.com/carlqt/alexariddles/riddles"
-	"github.com/sirupsen/logrus"
 )
 
 func ApiHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		// logFile(r)
 		next.ServeHTTP(w, r)
 	})
 }
 
 func riddleHandler(w http.ResponseWriter, r *http.Request) {
-	logFile(r)
 
 	alexaReq, err := alexaskill.AlexaNewRequest(r.Body)
 	if err != nil {
@@ -54,25 +49,20 @@ func riddleHandler(w http.ResponseWriter, r *http.Request) {
 				if len(userAnswer) == 0 {
 					response.AlexaText("Sorry, it is not the answer. Try again").
 						SessionAttr("answer", sessionAnswer).
+						RepromptText("Time is up. The answer is, "+answer).
 						SimpleCard("Riddle me this", "Sorry, it is not the answer. Try again").
 						Respond(w, 200, false)
 
 				} else {
-					response.AlexaText("Sorry, "+userAnswer+" is not the answer. Try again").SessionAttr("answer", sessionAnswer).SimpleCard("Riddle me this", "Sorry, "+userAnswer+" is not the answer. Try again").Respond(w, 200, false)
+					response.AlexaText("Sorry, "+userAnswer+" is not the answer. Try again").
+						SessionAttr("answer", sessionAnswer).
+						SimpleCard("Riddle me this", "Sorry, "+userAnswer+" is not the answer. Try again").
+						RepromptText("Time is up. The answer is, "+answer).
+						Respond(w, 200, false)
 				}
 			}
 		default:
 			response.AlexaText("I do not know how to answer").SimpleCard("Riddle me this", "I do not know how to answer").Respond(w, 200, true)
 		}
 	}
-}
-
-func logFile(r *http.Request) {
-	requestCopy, _ := ioutil.ReadAll(r.Body)
-	r.Body = ioutil.NopCloser(bytes.NewReader(requestCopy))
-
-	logrus.WithFields(logrus.Fields{
-		"request": string(requestCopy),
-	}).Info("request info")
-
 }

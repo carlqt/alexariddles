@@ -9,21 +9,7 @@ import (
 	alexaMiddleware "github.com/carlqt/alexariddles/alexaskill/middleware"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/sirupsen/logrus"
 )
-
-var f *os.File
-
-func init() {
-	var err error
-	f, err = os.OpenFile("./riddles.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	logrus.SetFormatter(&logrus.TextFormatter{})
-	logrus.SetOutput(f)
-}
 
 func main() {
 	port := os.Getenv("PORT")
