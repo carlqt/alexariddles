@@ -1,7 +1,11 @@
-package: github.com/carlqt/alexa
+package: github.com/carlqt/alexariddles
 import:
-- package: github.com/pressly/chi
-  version: ~3.0.0
+- package: github.com/carlqt/alexaskill
+  subpackages:
+  - middleware
+  - response
+- package: github.com/go-chi/chi
+  version: ^3.0.0
   subpackages:
   - middleware
 - package: github.com/sirupsen/logrus
