@@ -44,7 +44,11 @@ func riddleHandler(w http.ResponseWriter, r *http.Request) {
 			if sessionAnswer == userAnswer {
 				response.AlexaText("You are correct. The answer is "+sessionAnswer).SimpleCard("Riddle me this", "You are correct. Then answer is "+sessionAnswer).Respond(w, 200, true)
 			} else {
-				response.AlexaText("Sorry, "+userAnswer+" is not the answer. Try again").SimpleCard("Riddle me this", "Sorry, "+userAnswer+" is not the answer. Try again").Respond(w, 200, false)
+				if userAnswer == "" {
+					response.AlexaText("Sorry, it is not the answer. Try again").SessionAttr("answer", sessionAnswer).SimpleCard("Riddle me this", "Sorry, it is not the answer. Try again").Respond(w, 200, false)
+				} else {
+					response.AlexaText("Sorry, "+userAnswer+" is not the answer. Try again").SessionAttr("answer", sessionAnswer).SimpleCard("Riddle me this", "Sorry, "+userAnswer+" is not the answer. Try again").Respond(w, 200, false)
+				}
 			}
 		default:
 			response.AlexaText("I do not know how to answer").SimpleCard("Riddle me this", "I do not know how to answer").Respond(w, 200, true)
