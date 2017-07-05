@@ -66,12 +66,16 @@ func (a *AlexaResponse) SimpleCard(title, content string) *AlexaResponse {
 	return a
 }
 
-func (a *AlexaResponse) Respond(w http.ResponseWriter, status int, closeSession bool) {
-	a.Response.ShouldEndSession = closeSession
+func (a *AlexaResponse) Respond(w http.ResponseWriter, status int) {
 	resp, _ := json.Marshal(a)
 
 	w.WriteHeader(status)
 	w.Write(resp)
+}
+
+func (a *AlexaResponse) EndSession(b bool) *AlexaResponse {
+	a.Response.ShouldEndSession = b
+	return a
 }
 
 func (a *AlexaResponse) RepromptText(speech string) *AlexaResponse {
