@@ -66,7 +66,7 @@ type Slots struct {
 	Answer struct {
 		Name  string `json:"name"`
 		Value string `json:"value"`
-	} `json:"answer"`
+	} `json:"RiddleAnswer"`
 }
 
 // AlexaNewRequest is a constructor that reads the request.Body from Amazon

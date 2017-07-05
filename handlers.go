@@ -23,7 +23,6 @@ func ApiHandler(next http.Handler) http.Handler {
 }
 
 func riddleHandler(w http.ResponseWriter, r *http.Request) {
-
 	alexaReq, err := alexaskill.AlexaNewRequest(r.Body)
 	if err != nil {
 		w.Write([]byte(err.Error()))
@@ -60,8 +59,7 @@ func intentRequestHandler(alexaReq *alexaskill.AlexaRequest) *response.AlexaResp
 		if len(answer) == 0 {
 			return response.AlexaText("No riddles have been given yet").
 				SimpleCard("Riddle me this", "No riddles have been given yet").
-				RepromptText("Time is up. The answer is, " + answer).
-				EndSession(false)
+				EndSession(true)
 		}
 
 		return response.AlexaText(riddle).
@@ -76,6 +74,12 @@ func intentRequestHandler(alexaReq *alexaskill.AlexaRequest) *response.AlexaResp
 
 		if sessionAnswer == userAnswer {
 			return response.AlexaText("You are correct. The answer is "+sessionAnswer).SimpleCard("Riddle me this", "You are correct. Then answer is "+sessionAnswer).EndSession(true)
+		}
+
+		if len(sessionAnswer) == 0 {
+			return response.AlexaText("No riddles have been given yet").
+				SimpleCard("Riddle me this", "No riddles have been given yet").
+				EndSession(true)
 		}
 
 		if len(userAnswer) == 0 {
