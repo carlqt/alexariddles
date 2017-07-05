@@ -44,6 +44,10 @@ func intentRequestHandler(alexaReq *alexaskill.AlexaRequest) *response.AlexaResp
 		return response.AlexaText("Questor cancelled").SimpleCard("Questor", "cancel").EndSession(true)
 	case "AMAZON.StopIntent":
 		return response.AlexaText("Questor stopped").SimpleCard("Questor", "stop").EndSession(true)
+	case "AMAZON.HelpIntent":
+		return response.AlexaText("Answer the riddles with the phrase, The answer is my answer").
+			SimpleCard("Questor", "Answer the riddles with the phrase, the answer is <my answer>").
+			EndSession(true)
 	case "AskRiddle":
 		answer, riddle := riddles.Ask()
 		return response.AlexaText(riddle).
