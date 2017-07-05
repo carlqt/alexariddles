@@ -2,7 +2,6 @@ package response
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
@@ -72,7 +71,6 @@ func (a *AlexaResponse) Respond(w http.ResponseWriter, status int, closeSession 
 	resp, _ := json.Marshal(a)
 
 	w.WriteHeader(status)
-	log.Println(string(resp))
 	w.Write(resp)
 }
 

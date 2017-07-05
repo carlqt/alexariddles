@@ -1,4 +1,3 @@
-//TODO: Handle when user has incorrect answers
 package main
 
 import (

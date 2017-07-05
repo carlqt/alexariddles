@@ -1,5 +1,10 @@
-//TODO: Check if answer is correct/incorrect
-//TODO: Reprompt if user is taking too long to answer
+//TODO: Check if answer is correct/incorrect done
+//TODO: Reprompt if user is taking too long to answer done
+//TODO: Handle multiple answers in sessions
+//TODO: RepeatIntent
+//TODO: HelpIntent - instructions
+//TODO: SLOTS struct improvement
+//TODO: Handle when AnswerRiddle is initiated without AskRiddle
 package main
 
 import (
@@ -25,7 +30,7 @@ func riddleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	riddle, answer := riddles.Ask()
+	answer, riddle := riddles.Ask()
 	if alexaReq.Type() == "IntentRequest" {
 		switch alexaReq.IntentName() {
 		case "AMAZON.CancelIntent":
@@ -33,6 +38,13 @@ func riddleHandler(w http.ResponseWriter, r *http.Request) {
 		case "AMAZON.StopIntent":
 			response.AlexaText("Questor stopped").SimpleCard("Questor", "stop").Respond(w, 200, true)
 		case "AskRiddle":
+			response.AlexaText(riddle).
+				SimpleCard("Riddle me this", riddle).
+				SessionAttr("answer", answer).
+				RepromptText("Time is up. The answer is, "+answer).
+				Respond(w, 200, false)
+
+		case "RepeatRiddle":
 			response.AlexaText(riddle).
 				SimpleCard("Riddle me this", riddle).
 				SessionAttr("answer", answer).
