@@ -8,6 +8,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/carlqt/alexariddles/alexaskill"
@@ -26,6 +27,12 @@ func riddleHandler(w http.ResponseWriter, r *http.Request) {
 	alexaReq, err := alexaskill.AlexaNewRequest(r.Body)
 	if err != nil {
 		w.Write([]byte(err.Error()))
+		return
+	}
+
+	if alexaReq.AppID() != "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136" {
+		w.WriteHeader(404)
+		log.Println("Invalid application id")
 		return
 	}
 
