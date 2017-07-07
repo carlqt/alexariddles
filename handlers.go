@@ -36,16 +36,18 @@ func riddleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if alexaReq.Type() == "IntentRequest" {
+	switch alexaReq.Type() {
+	case "IntentRequest":
 		alexaResp := intentRequestHandler(alexaReq)
 		alexaResp.Respond(w, 200)
-	} else {
-		response.AlexaText("Questor cancelled").SimpleCard("Questor", "cancel").EndSession(true)
+	case "LaunchRequest":
+		response.AlexaText("Questor has been launched. Let the games begin").SimpleCard("Questor", "Questor has been launched. Let the games begin").Respond(w, 200)
+	default:
+		response.AlexaText("Questor cancelled").SimpleCard("Questor", "cancel").EndSession(true).Respond(w, 200)
 	}
 }
 
 func intentRequestHandler(alexaReq *alexaskill.AlexaRequest) *response.AlexaResponse {
-	// if RepeatRiddle or AnswerRiddle is called without a session, should respond "No riddles yet"
 	switch alexaReq.IntentName() {
 	case "AMAZON.CancelIntent":
 		return response.AlexaText("Questor cancelled").SimpleCard("Questor", "cancel").EndSession(true)
