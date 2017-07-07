@@ -12,7 +12,6 @@ import (
 	"net/http"
 
 	"github.com/carlqt/alexariddles/alexaskill"
-	"github.com/carlqt/alexariddles/alexaskill/response"
 	"github.com/carlqt/alexariddles/riddles"
 )
 
@@ -40,14 +39,14 @@ func riddleHandler(w http.ResponseWriter, r *http.Request) {
 	case "IntentRequest":
 		intentRequestResponse(alexaReq).Respond(w, 200)
 	case "LaunchRequest":
-		response.NewAlexaText("Questor has been launched. Let the games begin").SimpleCard("Questor", "Questor has been launched. Let the games begin").Respond(w, 200)
+		alexaskill.NewAlexaText("Questor has been launched. Let the games begin").SimpleCard("Questor", "Questor has been launched. Let the games begin").Respond(w, 200)
 	default:
-		response.NewAlexaText("Questor cancelled").SimpleCard("Questor", "cancel").EndSession(true).Respond(w, 200)
+		alexaskill.NewAlexaText("Questor cancelled").SimpleCard("Questor", "cancel").EndSession(true).Respond(w, 200)
 	}
 }
 
-func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *response.AlexaResponse {
-	alexaResp := response.NewAlexaResponse("1.0")
+func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaResponse {
+	alexaResp := alexaskill.NewAlexaResponse("1.0")
 
 	switch alexaReq.IntentName() {
 	case "AMAZON.CancelIntent":

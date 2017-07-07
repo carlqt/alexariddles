@@ -1,11 +1,9 @@
-package response
+package alexaskill
 
 import (
 	"encoding/json"
 	"net/http"
 )
-
-type sessionAttr map[string]string
 
 type AlexaResponse struct {
 	Version           string      `json:"version"`
