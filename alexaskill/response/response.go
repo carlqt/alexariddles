@@ -35,19 +35,42 @@ type Card struct {
 	Text    string `json:"text"`
 }
 
-func AlexaText(speech string) *AlexaResponse {
+// NewAlexaResponse is a constructor that sets the bare minimum for the AlexaResponse struct
+func NewAlexaResponse(version string) *AlexaResponse {
+	session := make(map[string]string)
+	return &AlexaResponse{
+		Version:           "1.0",
+		SessionAttributes: session,
+	}
+}
+
+// NewAlexaText is a constructor much like the NewAlexaResponse but defaults the outputSpeech.Type field to PlainText
+func NewAlexaText(speech string) *AlexaResponse {
 	outputSpeech := OutputSpeech{
 		Type: "PlainText",
 		Text: speech,
 		SSML: "",
 	}
-	session := make(map[string]string)
 
-	return &AlexaResponse{
-		Version:           "1.0",
-		Response:          Response{OutputSpeech: outputSpeech, ShouldEndSession: false},
-		SessionAttributes: session,
+	resp := NewAlexaResponse("1.0")
+	resp.Response.OutputSpeech = outputSpeech
+	resp.Response.ShouldEndSession = false
+
+	return resp
+}
+
+// AlexaText is a method much like the NewAlexaText constructor much like the NewAlexaResponse but defaults the outputSpeech.Type field to PlainText
+func (a *AlexaResponse) AlexaText(speech string) *AlexaResponse {
+	outputSpeech := OutputSpeech{
+		Type: "PlainText",
+		Text: speech,
+		SSML: "",
 	}
+
+	a.Response.OutputSpeech = outputSpeech
+	a.Response.ShouldEndSession = false
+
+	return a
 }
 
 func (a *AlexaResponse) SessionAttr(key, value string) *AlexaResponse {
