@@ -23,13 +23,16 @@ func ApiHandler(next http.Handler) http.Handler {
 }
 
 func riddleHandler(w http.ResponseWriter, r *http.Request) {
+	//myAppID := "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
+	myAppID := "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
+
 	alexaReq, err := alexaskill.AlexaNewRequest(r.Body)
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		return
 	}
 
-	if alexaReq.AppID() != "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136" {
+	if alexaReq.AppID() != myAppID {
 		w.WriteHeader(404)
 		log.Println("Invalid application id")
 		return
@@ -83,7 +86,7 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 
 	case "AnswerRiddle":
 		sessionAnswer := alexaReq.GetSessionAttr("answer")
-		userAnswer := alexaReq.GetUserAnswer()
+		userAnswer := alexaReq.Request.Intent.Slots.Value("RiddleAnswer")
 
 		if sessionAnswer == userAnswer {
 			alexaResp.AlexaText("You are correct. The answer is "+sessionAnswer).SimpleCard("Riddle me this", "You are correct. Then answer is "+sessionAnswer).EndSession(true)

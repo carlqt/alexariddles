@@ -59,14 +59,17 @@ type Session struct {
 // Intent object of alexa request
 type Intent struct {
 	Name  string `json:"name"`
-	Slots Slots  `json:"slots"`
+	Slots Slots
 }
 
-type Slots struct {
-	Answer struct {
-		Name  string `json:"name"`
-		Value string `json:"value"`
-	} `json:"RiddleAnswer"`
+type Slots map[string]map[string]string
+
+func (s Slots) Name(key string) string {
+	return s[key]["name"]
+}
+
+func (s Slots) Value(key string) string {
+	return s[key]["value"]
 }
 
 // AlexaNewRequest is a constructor that reads the request.Body from Amazon
@@ -98,10 +101,6 @@ func (a *AlexaRequest) IntentName() string {
 //AppID is a function shortcut to get AlexaRequest.Request.Intent.Name
 func (a *AlexaRequest) AppID() string {
 	return a.Session.Application.ApplicationID
-}
-
-func (a *AlexaRequest) GetUserAnswer() string {
-	return a.Request.Intent.Slots.Answer.Value
 }
 
 func (a *AlexaRequest) GetSessionAttr(key string) string {

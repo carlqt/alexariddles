@@ -1,0 +1,34 @@
+{
+  "session": {
+    "sessionId": "SessionId.d4439f95-0b10-45e4-9133-92cfa50cdba2",
+    "application": {
+      "applicationId": "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
+    },
+    "attributes": {
+      "answer": "sleep"
+    },
+    "user": {
+      "userId": "amzn1.ask.account.AH2Y4V7T4UXBMQEQKKIV7WMMZKVOBMGGGKWGVES3KAHDNPUOD6BMR3WD3ZL2RFT6VD47DNMGGKLG4XKAYYLBHEQ2TAKJ5PA525SKS3GZOMJC7PQZHIYLMCDHCMTDOV6AKPLZWPAQN6HJ5VZ4RGRIUBB7FK7TRO72T6BTIFJH3NXJM2P6JBKWFKJ5SKQI4LDLJYMXX2T6BZSRCDA"
+    },
+    "new": false
+  },
+  "request": {
+    "type": "IntentRequest",
+    "requestId": "EdwRequestId.ee14a2be-a349-4ace-813b-9f6caaf430af",
+    "locale": "en-US",
+    "timestamp": "2017-07-08T09:44:47Z",
+    "intent": {
+      "name": "AnswerRiddle",
+      "slots": {
+        "FILTER": {
+          "name": "FILTER"
+        },
+        "ANSWER_SLOT": {
+          "name": "ANSWER_SLOT",
+          "value": "answer"
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
