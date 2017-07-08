@@ -13,7 +13,6 @@ import (
 
 	"github.com/carlqt/alexariddles/alexaskill"
 	"github.com/carlqt/alexariddles/riddles"
-	"github.com/carlqt/alexaskill/response"
 )
 
 func ApiHandler(next http.Handler) http.Handler {
@@ -23,7 +22,7 @@ func ApiHandler(next http.Handler) http.Handler {
 	})
 }
 
-func riddleHandler(w http.ResponseWriter, r *http.Request) {
+func RiddleHandler(w http.ResponseWriter, r *http.Request) {
 	//myAppID := "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
 	myAppID := "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
 
@@ -60,7 +59,7 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 	case "AMAZON.HelpIntent":
 		text := `Questor will give you random riddles for you to answer. To start, use the phrase, tell me a questor riddle or i am ready for a riddle. Answer his riddles starting with the phrase, The answer is your answer. Questor will wait a couple of seconds, then if you are not able to answer his riddle, questor will give you the answer. You can give up by saying the phrase, I don't know or I give up. You can exit by saying close, goodbye or cancel. What can I help you with?`
 
-		return response.AlexaText(text).
+		alexaResp.AlexaText(text).
 			SimpleCard("Questor", text)
 	case "AskRiddle":
 		answer, riddle := riddles.Ask()
@@ -89,12 +88,12 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 		sessionAnswer := alexaReq.GetSessionAttr("answer")
 
 		if len(sessionAnswer) == 0 {
-			return response.AlexaText("No riddles have been given yet").
+			alexaResp.AlexaText("No riddles have been given yet").
 				SimpleCard("Riddle me this", "No riddles have been given yet").
 				EndSession(true)
 		}
 
-		return response.AlexaText("The answer is "+sessionAnswer).
+		alexaResp.AlexaText("The answer is "+sessionAnswer).
 			SimpleCard("Riddle me this", "Then answer is "+sessionAnswer).
 			EndSession(true)
 
@@ -133,6 +132,6 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 	return alexaResp
 }
 
-func repeatRiddleHandler() {
-
+func HeartBeat(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("OK"))
 }

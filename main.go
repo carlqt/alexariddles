@@ -18,8 +18,9 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(ApiHandler)
 	r.Use(alexaMiddleware.AlexaValidation)
+	r.Get("/heartbeat", HeartBeat)
 
-	r.Post("/", riddleHandler)
+	r.Post("/", RiddleHandler)
 
 	log.Println("listening to port ", port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
