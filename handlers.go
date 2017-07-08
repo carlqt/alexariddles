@@ -54,9 +54,10 @@ func intentRequestHandler(alexaReq *alexaskill.AlexaRequest) *response.AlexaResp
 	case "AMAZON.StopIntent":
 		return response.AlexaText("Questor stopped").SimpleCard("Questor", "stop").EndSession(true)
 	case "AMAZON.HelpIntent":
-		return response.AlexaText("Answer the riddles with the phrase, The answer is my answer").
-			SimpleCard("Questor", "Answer the riddles with the phrase, the answer is <my answer>").
-			EndSession(true)
+		text := `Questor will give you random riddles for you to answer. To start, use the phrase, tell me a questor riddle or i am ready for a riddle. Answer his riddles starting with the phrase, The answer is your answer. Questor will wait a couple of seconds, then if you are not able to answer his riddle, questor will give you the answer. You can give up by saying the phrase, I don't know or I give up. You can exit by saying close, goodbye or cancel. What can I help you with?`
+
+		return response.AlexaText(text).
+			SimpleCard("Questor", text)
 	case "AskRiddle":
 		answer, riddle := riddles.Ask()
 		return response.AlexaText(riddle).
@@ -80,6 +81,18 @@ func intentRequestHandler(alexaReq *alexaskill.AlexaRequest) *response.AlexaResp
 			SessionAttr("answer", answer).
 			RepromptText("Time is up. The answer is, " + answer).
 			EndSession(false)
+	case "DontKnow":
+		sessionAnswer := alexaReq.GetSessionAttr("answer")
+
+		if len(sessionAnswer) == 0 {
+			return response.AlexaText("No riddles have been given yet").
+				SimpleCard("Riddle me this", "No riddles have been given yet").
+				EndSession(true)
+		}
+
+		return response.AlexaText("The answer is "+sessionAnswer).
+			SimpleCard("Riddle me this", "Then answer is "+sessionAnswer).
+			EndSession(true)
 
 	case "AnswerRiddle":
 		sessionAnswer := alexaReq.GetSessionAttr("answer")
