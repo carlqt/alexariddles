@@ -77,13 +77,14 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 			alexaResp.AlexaText("No riddles have been given yet").
 				SimpleCard("Riddle me this", "No riddles have been given yet").
 				EndSession(true)
-		}
+		} else {
+			alexaResp.AlexaText(riddle).
+				SimpleCard("Riddle me this", riddle).
+				SessionAttr("answer", answer).
+				RepromptText("Time is up. The answer is, " + answer).
+				EndSession(false)
 
-		alexaResp.AlexaText(riddle).
-			SimpleCard("Riddle me this", riddle).
-			SessionAttr("answer", answer).
-			RepromptText("Time is up. The answer is, " + answer).
-			EndSession(false)
+		}
 	case "DontKnow":
 		sessionAnswer := alexaReq.GetSessionAttr("answer")
 
@@ -91,40 +92,36 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 			alexaResp.AlexaText("No riddles have been given yet").
 				SimpleCard("Riddle me this", "No riddles have been given yet").
 				EndSession(true)
+		} else {
+			alexaResp.AlexaText("The answer is "+sessionAnswer).
+				SimpleCard("Riddle me this", "Then answer is "+sessionAnswer).
+				EndSession(true)
 		}
-
-		alexaResp.AlexaText("The answer is "+sessionAnswer).
-			SimpleCard("Riddle me this", "Then answer is "+sessionAnswer).
-			EndSession(true)
 
 	case "AnswerRiddle":
 		sessionAnswer := alexaReq.GetSessionAttr("answer")
 		userAnswer := alexaReq.Request.Intent.Slots.Value("RiddleAnswer")
 
-		if sessionAnswer == userAnswer {
-			alexaResp.AlexaText("You are correct. The answer is "+sessionAnswer).SimpleCard("Riddle me this", "You are correct. Then answer is "+sessionAnswer).EndSession(true)
-		}
-
-		if len(sessionAnswer) == 0 {
+		switch {
+		case len(sessionAnswer) == 0:
 			alexaResp.AlexaText("No riddles have been given yet").
 				SimpleCard("Riddle me this", "No riddles have been given yet").
 				EndSession(true)
-		}
-
-		if len(userAnswer) == 0 {
+		case len(userAnswer) == 0:
 			alexaResp.AlexaText("Sorry, it is not the answer. Try again").
 				SessionAttr("answer", sessionAnswer).
 				RepromptText("Time is up. The answer is, "+sessionAnswer).
 				SimpleCard("Riddle me this", "Sorry, it is not the answer. Try again").
 				EndSession(false)
-
+		case sessionAnswer == userAnswer:
+			alexaResp.AlexaText("You are correct. The answer is "+sessionAnswer).SimpleCard("Riddle me this", "You are correct. Then answer is "+sessionAnswer).EndSession(true)
+		default:
+			alexaResp.AlexaText("Sorry, "+userAnswer+" is not the answer. Try again").
+				SessionAttr("answer", sessionAnswer).
+				SimpleCard("Riddle me this", "Sorry, "+userAnswer+" is not the answer. Try again").
+				RepromptText("Time is up. The answer is, " + sessionAnswer).
+				EndSession(false)
 		}
-
-		alexaResp.AlexaText("Sorry, "+userAnswer+" is not the answer. Try again").
-			SessionAttr("answer", sessionAnswer).
-			SimpleCard("Riddle me this", "Sorry, "+userAnswer+" is not the answer. Try again").
-			RepromptText("Time is up. The answer is, " + sessionAnswer).
-			EndSession(false)
 	default:
 		alexaResp.AlexaText("I do not know how to answer").SimpleCard("Riddle me this", "I do not know how to answer").EndSession(true)
 	}
