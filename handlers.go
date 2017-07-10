@@ -7,15 +7,33 @@
 //TODO: Handle when AnswerRiddle is initiated without AskRiddle
 //TODO: Study alexa request and refactor session getters
 //TODO: add unit test to alexaskill package
+//TODO: Add tests when we can make requests again using the amazon
 package main
 
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/carlqt/alexariddles/alexaskill"
 	"github.com/carlqt/alexariddles/riddles"
 )
+
+// type wrapperResponseWriter struct {
+// 	http.ResponseWriter
+// 	statusCode int
+// }
+
+// func loggerHandler(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		requestDump, err := httputil.DumpRequest(r, true)
+// 		if err != nil {
+// 			fmt.Println(err)
+// 		}
+// 		fmt.Println(string(requestDump))
+// 		next.ServeHTTP(w, r)
+// 	})
+// }
 
 func ApiHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -25,8 +43,8 @@ func ApiHandler(next http.Handler) http.Handler {
 }
 
 func RiddleHandler(w http.ResponseWriter, r *http.Request) {
-	//myAppID := "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
-	myAppID := "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
+	myAppID := "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
+	// myAppID := "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
 
 	alexaReq, err := alexaskill.AlexaNewRequest(r.Body)
 	if err != nil {
@@ -68,11 +86,11 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 		alexaResp.AlexaText(riddle).
 			SimpleCard("Riddle me this", riddle).
 			SessionAttr("answer", answer).
-			RepromptText("Time is up. The answer is, " + answer).
+			RepromptText("Time is up. The answer is, " + answer + ". Would you like another riddle?").
 			EndSession(false)
 
 	case "RepeatRiddle":
-		answer := alexaReq.GetSessionAttr("answer")
+		answer := strings.ToLower(alexaReq.GetSessionAttr("answer"))
 		riddle := riddles.GetRiddle(answer)
 
 		if len(answer) == 0 {
@@ -83,12 +101,12 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 			alexaResp.AlexaText(riddle).
 				SimpleCard("Riddle me this", riddle).
 				SessionAttr("answer", answer).
-				RepromptText("Time is up. The answer is, " + answer).
+				RepromptText("Time is up. The answer is, " + answer + ". Would you like another riddle?").
 				EndSession(false)
 
 		}
 	case "DontKnow":
-		sessionAnswer := alexaReq.GetSessionAttr("answer")
+		sessionAnswer := strings.ToLower(alexaReq.GetSessionAttr("answer"))
 
 		if len(sessionAnswer) == 0 {
 			alexaResp.AlexaText("No riddles have been given yet").
@@ -101,8 +119,8 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 		}
 
 	case "AnswerRiddle":
-		sessionAnswer := alexaReq.GetSessionAttr("answer")
-		userAnswer := alexaReq.Request.Intent.Slots.Value("RiddleAnswer")
+		sessionAnswer := strings.ToLower(alexaReq.GetSessionAttr("answer"))
+		userAnswer := strings.ToLower(alexaReq.Request.Intent.Slots.Value("RiddleAnswer"))
 
 		switch {
 		case len(sessionAnswer) == 0:
@@ -112,7 +130,7 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 		case len(userAnswer) == 0:
 			alexaResp.AlexaText("Sorry, it is not the answer. Try again").
 				SessionAttr("answer", sessionAnswer).
-				RepromptText("Time is up. The answer is, "+sessionAnswer).
+				RepromptText("Time is up. The answer is, "+sessionAnswer+". Would you like another riddle?").
 				SimpleCard("Riddle me this", "Sorry, it is not the answer. Try again").
 				EndSession(false)
 		case sessionAnswer == userAnswer:

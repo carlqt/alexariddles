@@ -15,6 +15,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var appID = "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
+
 func TestRiddleHandler(t *testing.T) {
 	assert := assert.New(t)
 
@@ -22,7 +24,7 @@ func TestRiddleHandler(t *testing.T) {
   "session": {
     "sessionId": "SessionId.7098bcf8-9994-4bbf-8ae7-b41d85723a7d",
     "application": {
-      "applicationId": "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
+      "applicationId": "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
     },
     "attributes": {},
     "user": {
@@ -59,7 +61,7 @@ func TestRepeatRiddleIntentNoSession(t *testing.T) {
   "session": {
     "sessionId": "SessionId.7098bcf8-9994-4bbf-8ae7-b41d85723a7d",
     "application": {
-      "applicationId": "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
+      "applicationId": "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
     },
     "attributes": {},
     "user": {
@@ -100,7 +102,7 @@ func TestRepeatRiddleWithSession(t *testing.T) {
   "session": {
     "sessionId": "SessionId.7098bcf8-9994-4bbf-8ae7-b41d85723a7d",
     "application": {
-      "applicationId": "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
+      "applicationId": "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
     },
     "attributes": {
 			"answer": "man"
@@ -146,7 +148,7 @@ func TestAnswerRiddleWrongAnswer(t *testing.T) {
   "session": {
     "sessionId": "SessionId.8a422ce6-3243-46ee-afa9-6c8f33dabe7c",
     "application": {
-      "applicationId": "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
+      "applicationId": "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
     },
     "attributes": {
 			"answer": "man"
@@ -197,7 +199,7 @@ func TestAnswerRiddleNoSession(t *testing.T) {
   "session": {
     "sessionId": "SessionId.8a422ce6-3243-46ee-afa9-6c8f33dabe7c",
     "application": {
-      "applicationId": "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
+      "applicationId": "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
     },
     "attributes": {},
     "user": {
@@ -236,6 +238,53 @@ func TestAnswerRiddleNoSession(t *testing.T) {
 	alexaResp := alexaskill.AlexaResponse{}
 	json.Unmarshal(rr.Body.Bytes(), &alexaResp)
 	expect := "No riddles have been given yet"
+
+	assert.Equal(expect, alexaResp.Response.OutputSpeech.Text)
+	assert.True(alexaResp.Response.ShouldEndSession)
+}
+
+func TestDontKnowIntent(t *testing.T) {
+	assert := assert.New(t)
+	request := strings.NewReader(`{
+  "session": {
+    "sessionId": "SessionId.b8e78c71-e4dc-46a2-a4bd-a8b490913b34",
+    "application": {
+      "applicationId": "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
+    },
+    "attributes": {
+      "answer": "man"
+    },
+    "user": {
+      "userId": "amzn1.ask.account.AG3MUSFEC6464TYB4LJ3JYBAXDY2BPSC5CPJZKKJS7S7JWWSZBZ2D3RKCJVKFS3VEPXUAGKH7SCR7CR5LBWGXLHNMAPIRX6NO3REZ4ZN6FFYMKRETCT5XR4TEWRVBB3BUDUNZ6X7KWWGKAYPYVI4IL3ZQQYT5JDOXTCYQVPHRY3ONFRFSSJIUSFJCJZNUQ2A62FAOAAI2CUVTNI"
+    },
+    "new": false
+  },
+  "request": {
+    "type": "IntentRequest",
+    "requestId": "EdwRequestId.b9131f03-6334-4efd-a17f-fd1375fefffb",
+    "locale": "en-US",
+    "timestamp": "2017-07-10T13:36:00Z",
+    "intent": {
+      "name": "DontKnow",
+      "slots": {}
+    }
+  },
+  "version": "1.0"
+}`)
+
+	req := httptest.NewRequest("POST", "/", request)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(RiddleHandler)
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("Wrong status code: got %v want %v", status, http.StatusOK)
+	}
+
+	alexaResp := alexaskill.AlexaResponse{}
+	json.Unmarshal(rr.Body.Bytes(), &alexaResp)
+	expect := "The answer is man"
 
 	assert.Equal(expect, alexaResp.Response.OutputSpeech.Text)
 	assert.True(alexaResp.Response.ShouldEndSession)
