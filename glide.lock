@@ -1,8 +1,10 @@
-hash: 3277f38b313f49b9fb5de4f446f868679477990d5ffeb9a83dc0ce9b11901a01
-updated: 2017-07-05T07:13:45.547724025+08:00
+hash: 51a892bef3da6fcaa25ab6d3c4e0480a81a488689fbc70523a7a55669cf64e85
+updated: 2017-07-10T09:06:52.610038012+08:00
 imports:
 - name: github.com/go-chi/chi
   version: 967844826e58cf31213a7dfb82455d242ad85101
   subpackages:
   - middleware
+- name: github.com/stretchr/testify
+  version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
 testImports: []

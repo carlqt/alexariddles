@@ -5,6 +5,8 @@
 //TODO: HelpIntent - instructions
 //TODO: SLOTS struct improvement
 //TODO: Handle when AnswerRiddle is initiated without AskRiddle
+//TODO: Study alexa request and refactor session getters
+//TODO: add unit test to alexaskill package
 package main
 
 import (
@@ -127,8 +129,4 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 	}
 
 	return alexaResp
-}
-
-func HeartBeat(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
 }

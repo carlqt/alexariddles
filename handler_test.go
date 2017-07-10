@@ -12,30 +12,12 @@ import (
 
 	"github.com/carlqt/alexariddles/alexaskill"
 	"github.com/carlqt/alexariddles/riddles"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestHeartBeat(t *testing.T) {
-	req, err := http.NewRequest("GET", "/heartbeat", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(HeartBeat)
-	handler.ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Wrong status code: got %v want %v", status, http.StatusOK)
-	}
-
-	expected := `OK`
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
-	}
-}
-
 func TestRiddleHandler(t *testing.T) {
+	assert := assert.New(t)
+
 	request := strings.NewReader(`{
   "session": {
     "sessionId": "SessionId.7098bcf8-9994-4bbf-8ae7-b41d85723a7d",
@@ -67,15 +49,12 @@ func TestRiddleHandler(t *testing.T) {
 	handler := http.HandlerFunc(RiddleHandler)
 	handler.ServeHTTP(rr, req)
 
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Wrong status code: got %v want %v", status, http.StatusOK)
-	}
-
-	alexaResp := alexaskill.AlexaResponse{}
-	json.Unmarshal(rr.Body.Bytes(), &alexaResp)
+	assert.Equal(http.StatusOK, rr.Code, "Status code should be 200")
 }
 
 func TestRepeatRiddleIntentNoSession(t *testing.T) {
+	assert := assert.New(t)
+
 	request := strings.NewReader(`{
   "session": {
     "sessionId": "SessionId.7098bcf8-9994-4bbf-8ae7-b41d85723a7d",
@@ -113,11 +92,10 @@ func TestRepeatRiddleIntentNoSession(t *testing.T) {
 
 	alexaResp := alexaskill.AlexaResponse{}
 	json.Unmarshal(rr.Body.Bytes(), &alexaResp)
-	if alexaResp.Response.OutputSpeech.Text != "No riddles have been given yet" {
-		t.Errorf("Wrong respond message: expected %v, actual %v", "No riddles have been given yet", alexaResp.Response.OutputSpeech.Text)
-	}
+	assert.Equal("No riddles have been given yet", alexaResp.Response.OutputSpeech.Text)
 }
 func TestRepeatRiddleWithSession(t *testing.T) {
+	assert := assert.New(t)
 	request := strings.NewReader(`{
   "session": {
     "sessionId": "SessionId.7098bcf8-9994-4bbf-8ae7-b41d85723a7d",
@@ -159,12 +137,11 @@ func TestRepeatRiddleWithSession(t *testing.T) {
 	json.Unmarshal(rr.Body.Bytes(), &alexaResp)
 	expect := riddles.GetRiddle("man")
 
-	if alexaResp.Response.OutputSpeech.Text != expect {
-		t.Errorf("Wrong respond message: expected %v, actual %v", "No riddles have been given yet", alexaResp.Response.OutputSpeech.Text)
-	}
+	assert.Equal(expect, alexaResp.Response.OutputSpeech.Text)
 }
 
 func TestAnswerRiddleWrongAnswer(t *testing.T) {
+	assert := assert.New(t)
 	request := strings.NewReader(`{
   "session": {
     "sessionId": "SessionId.8a422ce6-3243-46ee-afa9-6c8f33dabe7c",
@@ -211,12 +188,11 @@ func TestAnswerRiddleWrongAnswer(t *testing.T) {
 	json.Unmarshal(rr.Body.Bytes(), &alexaResp)
 	expect := "Sorry, manner is not the answer. Try again"
 
-	if alexaResp.Response.OutputSpeech.Text != expect {
-		t.Errorf("Wrong respond message: expected: %v; actual: %v", expect, alexaResp.Response.OutputSpeech.Text)
-	}
+	assert.Equal(expect, alexaResp.Response.OutputSpeech.Text)
 }
 
 func TestAnswerRiddleNoSession(t *testing.T) {
+	assert := assert.New(t)
 	request := strings.NewReader(`{
   "session": {
     "sessionId": "SessionId.8a422ce6-3243-46ee-afa9-6c8f33dabe7c",
@@ -261,11 +237,6 @@ func TestAnswerRiddleNoSession(t *testing.T) {
 	json.Unmarshal(rr.Body.Bytes(), &alexaResp)
 	expect := "No riddles have been given yet"
 
-	if alexaResp.Response.OutputSpeech.Text != expect {
-		t.Errorf("Wrong respond message: expected: %v; actual: %v", expect, alexaResp.Response.OutputSpeech.Text)
-	}
-
-	if alexaResp.Response.ShouldEndSession != true {
-		t.Errorf("Session should be open")
-	}
+	assert.Equal(expect, alexaResp.Response.OutputSpeech.Text)
+	assert.True(alexaResp.Response.ShouldEndSession)
 }

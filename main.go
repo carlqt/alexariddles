@@ -18,7 +18,6 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(ApiHandler)
 	r.Use(alexaMiddleware.AlexaValidation)
-	r.Get("/heartbeat", HeartBeat)
 
 	r.Post("/", RiddleHandler)
 
