@@ -65,7 +65,7 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 	case "AMAZON.StopIntent":
 		alexaResp.AlexaText("Questor stopped").SimpleCard("Questor", "stop").EndSession(true)
 	case "AMAZON.HelpIntent":
-		text := `Questor will give you random riddles for you to answer. To start, use the phrase, tell me a questor riddle or i am ready for a riddle. Answer his riddles starting with the phrase, The answer is your answer. Questor will wait a couple of seconds, then if you are not able to answer his riddle, questor will give you the answer. You can give up by saying the phrase, I don't know or I give up. You can exit by saying close, goodbye or cancel. What can I help you with?`
+		text := `Riddley will give you random riddles for you to answer. To start, use the phrase, Alexa ask riddley for riddles. To Answer his riddles, start your phrase with, Alexa, tell riddley the answer is your answer. Riddley will wait a couple of seconds, then if you're not able to answer his riddle, riddley will give you the answer. You can give up by saying the phrase, Alexa tell riddley I give up. You can exit by saying close, goodbye or cancel. You can repeat this by simpley saying Help. Is there anything else?`
 
 		alexaResp.AlexaText(text).
 			SimpleCard("Questor", text)
@@ -127,7 +127,7 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 			alexaResp.AlexaText("Sorry, "+userAnswer+" is not the answer. Try again").
 				SessionAttr("answer", sessionAnswer).
 				SimpleCard("Riddle me this", "Sorry, "+userAnswer+" is not the answer. Try again").
-				RepromptText("Time is up. The answer is, " + sessionAnswer).
+				RepromptText("Time is up. The answer is, " + sessionAnswer + ". Would you like another riddle?").
 				EndSession(false)
 		}
 	default:
