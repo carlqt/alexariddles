@@ -10,6 +10,12 @@ import (
 	"github.com/go-chi/chi/middleware"
 )
 
+func init() {
+	if !exists("log") {
+		os.MkdirAll("log", os.ModePerm)
+	}
+}
+
 func main() {
 	port := os.Getenv("PORT")
 	r := chi.NewRouter()
@@ -23,4 +29,17 @@ func main() {
 
 	log.Println("listening to port ", port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
+}
+
+func exists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	return true
 }

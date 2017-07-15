@@ -11,29 +11,16 @@
 package main
 
 import (
+	"bytes"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/carlqt/alexariddles/alexaskill"
+	"github.com/carlqt/alexariddles/helpers/httpdebug"
 	"github.com/carlqt/alexariddles/riddles"
 )
-
-// type wrapperResponseWriter struct {
-// 	http.ResponseWriter
-// 	statusCode int
-// }
-
-// func loggerHandler(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		requestDump, err := httputil.DumpRequest(r, true)
-// 		if err != nil {
-// 			fmt.Println(err)
-// 		}
-// 		fmt.Println(string(requestDump))
-// 		next.ServeHTTP(w, r)
-// 	})
-// }
 
 func ApiHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +35,8 @@ func RiddleHandler(w http.ResponseWriter, r *http.Request) {
 
 	alexaReq, err := alexaskill.AlexaNewRequest(r.Body)
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		log.Println(err)
+		w.WriteHeader(404)
 		return
 	}
 
@@ -62,9 +50,9 @@ func RiddleHandler(w http.ResponseWriter, r *http.Request) {
 	case "IntentRequest":
 		intentRequestResponse(alexaReq).Respond(w, 200)
 	case "LaunchRequest":
-		alexaskill.NewAlexaText("Questor has been launched. Let the games begin").SimpleCard("Questor", "Questor has been launched. Let the games begin").Respond(w, 200)
+		alexaskill.NewAlexaText("Riddley has been launched. Let the games begin").SimpleCard("Riddley", "Riddley has been launched. Let the games begin").Respond(w, 200)
 	default:
-		alexaskill.NewAlexaText("Questor cancelled").SimpleCard("Questor", "cancel").EndSession(true).Respond(w, 200)
+		alexaskill.NewAlexaText("There was something wrong").SimpleCard("Riddley", "something occured").EndSession(true).Respond(w, 200)
 	}
 }
 
@@ -147,4 +135,10 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 	}
 
 	return alexaResp
+}
+
+func logRequest(r *http.Request) {
+	requestCopy, _ := ioutil.ReadAll(r.Body)
+	r.Body = ioutil.NopCloser(bytes.NewReader(requestCopy))
+	httpdebug.PrettyJson(bytes.NewReader(requestCopy))
 }

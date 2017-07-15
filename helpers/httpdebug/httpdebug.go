@@ -16,7 +16,7 @@ func PrintResponse(response *http.Response) {
 	io.Copy(os.Stdout, response.Body)
 }
 
-func PrettyJson(reader io.ReadCloser) {
+func PrettyJson(reader io.Reader) {
 	var out bytes.Buffer
 	input, err := ioutil.ReadAll(reader)
 	if err != nil {

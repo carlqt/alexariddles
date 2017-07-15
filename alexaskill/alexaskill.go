@@ -23,6 +23,7 @@
 //   },
 //   "version": "1.0"
 // }
+// TODO: Create an error struct with line number
 
 package alexaskill
 
@@ -30,7 +31,12 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"log"
 )
+
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
 
 type sessionAttr map[string]string
 
@@ -59,17 +65,23 @@ type Session struct {
 // Intent object of alexa request
 type Intent struct {
 	Name  string `json:"name"`
-	Slots Slots
+	Slots Slots  `json:"slots"`
 }
 
-type Slots map[string]map[string]string
+type Slots map[string]SlotName
+
+type SlotName struct {
+	Name               string `json:"name"`
+	Value              string `json:"value"`
+	ConfirmationStatus string `json:"confirmationStatus"`
+}
 
 func (s Slots) Name(key string) string {
-	return s[key]["name"]
+	return s[key].Name
 }
 
 func (s Slots) Value(key string) string {
-	return s[key]["value"]
+	return s[key].Value
 }
 
 // AlexaNewRequest is a constructor that reads the request.Body from Amazon
