@@ -18,9 +18,23 @@ import (
 	"strings"
 
 	"github.com/carlqt/alexariddles/alexaskill"
-	"github.com/carlqt/alexariddles/helpers/httpdebug"
 	"github.com/carlqt/alexariddles/riddles"
+	"github.com/sirupsen/logrus"
 )
+
+type ResponseWriterWrapper struct {
+	http.ResponseWriter
+	Code int
+}
+
+func NewResponseWriter(w http.ResponseWriter) *ResponseWriterWrapper {
+	return &ResponseWriterWrapper{w, http.StatusOK}
+}
+
+func (r *ResponseWriterWrapper) WriteHeader(code int) {
+	r.Code = code
+	r.ResponseWriter.WriteHeader(code)
+}
 
 func ApiHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -29,9 +43,26 @@ func ApiHandler(next http.Handler) http.Handler {
 	})
 }
 
+func logRequest(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestCopy, _ := ioutil.ReadAll(r.Body)
+		r.Body = ioutil.NopCloser(bytes.NewReader(requestCopy))
+
+		rww := NewResponseWriter(w)
+		next.ServeHTTP(rww, r)
+
+		logrus.WithFields(logrus.Fields{
+			"path":    r.URL,
+			"method":  r.Method,
+			"status":  rww.Code,
+			"request": string(requestCopy),
+		}).Info("Request Logger")
+	})
+}
+
 func RiddleHandler(w http.ResponseWriter, r *http.Request) {
-	myAppID := "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
-	// myAppID := "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
+	// myAppID := "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
+	myAppID := "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
 
 	alexaReq, err := alexaskill.AlexaNewRequest(r.Body)
 	if err != nil {
@@ -135,10 +166,4 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 	}
 
 	return alexaResp
-}
-
-func logRequest(r *http.Request) {
-	requestCopy, _ := ioutil.ReadAll(r.Body)
-	r.Body = ioutil.NopCloser(bytes.NewReader(requestCopy))
-	httpdebug.PrettyJson(bytes.NewReader(requestCopy))
 }

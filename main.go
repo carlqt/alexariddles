@@ -7,23 +7,23 @@ import (
 
 	alexaMiddleware "github.com/carlqt/alexariddles/alexaskill/middleware"
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/sirupsen/logrus"
 )
 
 func init() {
 	if !exists("log") {
 		os.MkdirAll("log", os.ModePerm)
 	}
+	logrus.SetFormatter(&logrus.TextFormatter{})
 }
 
 func main() {
 	port := os.Getenv("PORT")
 	r := chi.NewRouter()
 
-	r.Use(middleware.RequestID)
-	r.Use(middleware.Logger)
 	r.Use(ApiHandler)
 	r.Use(alexaMiddleware.AlexaValidation)
+	r.Use(logRequest)
 
 	r.Post("/", RiddleHandler)
 
