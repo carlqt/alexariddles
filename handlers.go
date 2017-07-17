@@ -51,18 +51,27 @@ func logRequest(next http.Handler) http.Handler {
 		rww := NewResponseWriter(w)
 		next.ServeHTTP(rww, r)
 
-		logrus.WithFields(logrus.Fields{
-			"path":    r.URL,
-			"method":  r.Method,
-			"status":  rww.Code,
-			"request": string(requestCopy),
-		}).Info("Request Logger")
+		if rww.Code < 400 {
+			logrus.WithFields(logrus.Fields{
+				"path":    r.URL,
+				"method":  r.Method,
+				"status":  rww.Code,
+				"request": string(requestCopy),
+			}).Info("Request Logger")
+		} else {
+			logrus.WithFields(logrus.Fields{
+				"path":    r.URL,
+				"method":  r.Method,
+				"status":  rww.Code,
+				"request": string(requestCopy),
+			}).Error("Request Logger")
+		}
 	})
 }
 
 func RiddleHandler(w http.ResponseWriter, r *http.Request) {
-	// myAppID := "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
-	myAppID := "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
+	myAppID := "amzn1.ask.skill.3aebac54-38a0-4dd3-9f17-4942972e4136"
+	// myAppID := "amzn1.ask.skill.61e24a88-0159-4f67-983f-d974aa6b8d64"
 
 	alexaReq, err := alexaskill.AlexaNewRequest(r.Body)
 	if err != nil {
@@ -138,6 +147,8 @@ func intentRequestResponse(alexaReq *alexaskill.AlexaRequest) *alexaskill.AlexaR
 		}
 
 	case "AnswerRiddle":
+		// NewAnswerRiddle(alexaReq).Respond(w, 200)
+
 		sessionAnswer := strings.ToLower(alexaReq.GetSessionAttr("answer"))
 		userAnswer := strings.ToLower(alexaReq.Request.Intent.Slots.Value("RiddleAnswer"))
 
